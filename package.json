@@ -1,0 +1,26 @@
+{
+  "name": "slider",
+  "version": "0.0.1",
+  "description": "Slider criado utilizando ECMAScript 6",
+  "main": "index.js",
+  "scripts": {
+    "dev": "webpack --mode development --watch",
+    "build": "webpack --mode production"
+  },
+  "author": "Patrick Vieira Feitosa",
+  "license": "ISC",
+  "dependencies": {
+    "@babel/polyfill": "^7.2.5",
+    "whatwg-fetch": "^3.0.0"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.2.3",
+    "@babel/core": "^7.2.2",
+    "@babel/preset-env": "^7.2.3",
+    "eslint": "^5.11.1",
+    "eslint-config-airbnb-base": "^13.1.0",
+    "eslint-plugin-import": "^2.14.0",
+    "webpack": "^4.28.2",
+    "webpack-cli": "^3.1.2"
+  }
+}

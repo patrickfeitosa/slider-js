@@ -1,0 +1,16 @@
+{
+    "extends": "airbnb-base",
+    "env": {
+        "browser": true
+    },
+    "rules": {
+        "indent": [
+            "error",
+            4
+        ],
+        "no-param-reassign": 0,
+        "no-console": 0,
+        "import/extensions": 0,
+        "no-multi-assign": 0
+    }
+}
