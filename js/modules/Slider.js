@@ -9,6 +9,13 @@ export default class Slider {
         };
 
         this.bindEvents();
+        this.transition(true);
+        this.slidesConfig();
+        this.slidesIndexNav(0);
+    }
+
+    transition(active) {
+        this.slide.style.transition = active ? 'transform .3s' : '';
     }
 
     moveSlide(distX) {
@@ -31,6 +38,7 @@ export default class Slider {
             this.dist.startX = ev.changedTouches[0].clientX;
             moveType = 'touchmove';
         }
+        this.transition(false);
         this.wrapper.addEventListener(moveType, this.onMove);
     }
 
@@ -44,6 +52,18 @@ export default class Slider {
         const moveType = (ev.type === 'mouseup') ? 'mousemove' : 'touchmove';
         this.wrapper.removeEventListener(moveType, this.onMove);
         this.dist.finalPosition = this.dist.movePosition;
+        this.transition(true);
+        this.changeSlideOnEnd();
+    }
+
+    changeSlideOnEnd() {
+        if (this.dist.moviment > 120 && this.index.next !== undefined) {
+            this.activeNextSlide();
+        } else if (this.dist.moviment < -120 && this.index.prev !== undefined) {
+            this.activePrevSlide();
+        } else {
+            this.changeSlide(this.index.active);
+        }
     }
 
     addSlideEvents() {
@@ -73,7 +93,6 @@ export default class Slider {
                 element,
             };
         });
-        console.log(this.slideArray);
     }
 
     slidesIndexNav(index) {
@@ -92,8 +111,19 @@ export default class Slider {
         this.dist.finalPosition = activeSlide.position;
     }
 
+    activePrevSlide() {
+        if (this.index.prev !== undefined) {
+            this.changeSlide(this.index.prev);
+        }
+    }
+
+    activeNextSlide() {
+        if (this.index.next !== undefined) {
+            this.changeSlide(this.index.next);
+        }
+    }
+
     init() {
-        this.slidesConfig();
         this.addSlideEvents();
         return this;
     }
