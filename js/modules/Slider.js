@@ -109,6 +109,9 @@ export class Slider {
         this.slidesIndexNav(index);
         this.dist.finalPosition = activeSlide.position;
         this.changeActiveClass();
+
+        const newEvent = new CustomEvent('slideChanged');
+        this.slide.dispatchEvent(newEvent);
     }
 
     changeActiveClass() {
@@ -157,6 +160,20 @@ export class Slider {
 }
 
 export class SliderNav extends Slider {
+    constructor(...args) {
+        super(...args);
+        this.activeBulletClass = 'active';
+
+        this.addSlideEvents();
+        this.createBulletsPagination();
+        this.appendArrowNavigation();
+
+        this.slide.addEventListener('slideChanged', () => {
+            this.removeActiveClassFromPaginationBullets();
+            this.addActiveClassFromPaginationBullets(this.controlChildrens[this.index.active]);
+        });
+    }
+
     createArrowNavigation() {
         this.prevElement = this.createElementWithClass('button', 'slide-nav__prev');
         this.nextElement = this.createElementWithClass('button', 'slide-nav__next');
@@ -174,15 +191,40 @@ export class SliderNav extends Slider {
     appendArrowNavigation() {
         this.createArrowNavigation();
         this.addEventArrowNavigation();
+
         this.navigationContainer.appendChild(this.prevElement);
         this.navigationContainer.appendChild(this.nextElement);
         this.wrapper.appendChild(this.navigationContainer);
     }
 
-    init() {
-        this.addSlideEvents();
-        this.appendArrowNavigation();
-        return this;
+    createBulletsPagination() {
+        const controlContainer = this.createElementWithClass('ul', 'slide-pagination');
+
+        /* eslint-disable */
+        this.slideArray.map((item, index) => {
+            /* eslint-enable */
+            const itemElement = this.createElementWithClass('li', 'slide-pagination__item');
+            itemElement.innerText = index + 1;
+            itemElement.addEventListener('click', (ev) => {
+                ev.preventDefault();
+                this.removeActiveClassFromPaginationBullets();
+                this.addActiveClassFromPaginationBullets(ev.currentTarget);
+                this.changeSlide(index);
+            });
+            controlContainer.appendChild(itemElement);
+        });
+        this.control = controlContainer;
+        this.controlChildrens = [...this.control.children];
+        this.wrapper.appendChild(controlContainer);
+        this.addActiveClassFromPaginationBullets(this.controlChildrens[this.index.active]);
+    }
+
+    addActiveClassFromPaginationBullets(target) {
+        target.classList.add(this.activeBulletClass);
+    }
+
+    removeActiveClassFromPaginationBullets() {
+        [...this.control.children].map(item => item.classList.remove(this.activeBulletClass));
     }
 
     /* eslint-disable */

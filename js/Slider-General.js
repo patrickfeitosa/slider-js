@@ -18,6 +18,7 @@ const Methods = {
          * Slider com navegação
          */
         const sliderWithNav = new SliderNav(options);
+        window.sliderWithNav = sliderWithNav;
         sliderWithNav.init();
     },
 };
