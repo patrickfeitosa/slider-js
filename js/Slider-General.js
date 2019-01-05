@@ -1,4 +1,5 @@
-import Slider from './modules/Slider.js';
+import { Slider, SliderNav } from './modules/Slider.js';
+// import SliderNav from './modules/Slider.js';
 
 const Methods = {
     init() {
@@ -6,9 +7,18 @@ const Methods = {
             slide: '.js--slider',
             wrapper: '.js--main-wrapper',
         };
-        const slider = new Slider(options);
-        slider.init();
-        console.log(slider);
+
+        /**
+         * Slider Padrão
+         */
+        // const slider = new Slider(options);
+        // slider.init();
+
+        /**
+         * Slider com navegação
+         */
+        const sliderWithNav = new SliderNav(options);
+        sliderWithNav.init();
     },
 };
 
