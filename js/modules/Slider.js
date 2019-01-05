@@ -1,6 +1,6 @@
 import debounce from './helpers/debounce.js';
 
-export default class Slider {
+export class Slider {
     constructor(options) {
         this.slide = document.querySelector(options.slide);
         this.wrapper = document.querySelector(options.wrapper);
@@ -143,6 +143,10 @@ export default class Slider {
         this.onStart = this.onStart.bind(this);
         this.onMove = this.onMove.bind(this);
         this.onEnd = this.onEnd.bind(this);
+
+        this.activePrevSlide = this.activePrevSlide.bind(this);
+        this.activeNextSlide = this.activeNextSlide.bind(this);
+
         this.onResize = debounce(this.onResize.bind(this), 150);
     }
 
@@ -150,4 +154,42 @@ export default class Slider {
         this.addSlideEvents();
         return this;
     }
+}
+
+export class SliderNav extends Slider {
+    createArrowNavigation() {
+        this.prevElement = this.createElementWithClass('button', 'slide-nav__prev');
+        this.nextElement = this.createElementWithClass('button', 'slide-nav__next');
+        this.navigationContainer = this.createElementWithClass('div', 'slide-nav');
+
+        this.prevElement.innerText = 'Anterior';
+        this.nextElement.innerText = 'Próximo';
+    }
+
+    addEventArrowNavigation() {
+        this.prevElement.addEventListener('click', this.activePrevSlide);
+        this.nextElement.addEventListener('click', this.activeNextSlide);
+    }
+
+    appendArrowNavigation() {
+        this.createArrowNavigation();
+        this.addEventArrowNavigation();
+        this.navigationContainer.appendChild(this.prevElement);
+        this.navigationContainer.appendChild(this.nextElement);
+        this.wrapper.appendChild(this.navigationContainer);
+    }
+
+    init() {
+        this.addSlideEvents();
+        this.appendArrowNavigation();
+        return this;
+    }
+
+    /* eslint-disable */
+    createElementWithClass(element, customClass) {
+        const elementCreated = document.createElement(element);
+        elementCreated.classList.add(customClass);
+        return elementCreated;
+    }
+    /* eslint-enable */
 }
