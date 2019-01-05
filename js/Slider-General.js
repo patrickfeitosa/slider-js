@@ -6,6 +6,11 @@ const Methods = {
         const options = {
             slide: '.js--slider',
             wrapper: '.js--main-wrapper',
+            hasThumbs: {
+                options: true,
+                selector: '.js--thumbs',
+            },
+            infinite: true,
         };
 
         /**

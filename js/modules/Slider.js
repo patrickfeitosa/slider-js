@@ -9,14 +9,17 @@ export class Slider {
             startX: 0,
             moviment: 0,
         };
+        this.infinite = options.infinite || false;
         this.activeClass = 'slide-active';
 
         this.bindEvents();
         this.transition(true);
         this.slidesConfig();
         this.slidesIndexNav(0);
+        this.changeSlide(this.index.active);
         this.changeActiveClass();
         this.addResizeEvent();
+        this.keyboardNavigation();
     }
 
     transition(active) {
@@ -96,11 +99,19 @@ export class Slider {
 
     slidesIndexNav(index) {
         const last = this.slideArray.length - 1;
-        this.index = {
-            prev: index ? index - 1 : undefined,
-            active: index,
-            next: index === last ? undefined : index + 1,
-        };
+        if (this.infinite) {
+            this.index = {
+                prev: index ? index - 1 : last,
+                active: index,
+                next: index === last ? 0 : index + 1,
+            };
+        } else {
+            this.index = {
+                prev: index ? index - 1 : undefined,
+                active: index,
+                next: index === last ? undefined : index + 1,
+            };
+        }
     }
 
     changeSlide(index) {
@@ -133,13 +144,23 @@ export class Slider {
 
     onResize() {
         setTimeout(() => {
-            this.slidePosition();
+            this.slidesConfig();
             this.changeSlide(this.index.active);
-        }, 1000);
+        }, 500);
     }
 
     addResizeEvent() {
         window.addEventListener('resize', this.onResize);
+    }
+
+    keyboardNavigation() {
+        document.addEventListener('keyup', (ev) => {
+            if (ev.key === 'ArrowRight') {
+                this.activeNextSlide();
+            } else if (ev.key === 'ArrowLeft') {
+                this.activePrevSlide();
+            }
+        });
     }
 
     bindEvents() {
@@ -151,6 +172,7 @@ export class Slider {
         this.activeNextSlide = this.activeNextSlide.bind(this);
 
         this.onResize = debounce(this.onResize.bind(this), 150);
+        this.keyboardNavigation = this.keyboardNavigation.bind(this);
     }
 
     init() {
@@ -162,16 +184,53 @@ export class Slider {
 export class SliderNav extends Slider {
     constructor(...args) {
         super(...args);
-        this.activeBulletClass = 'active';
+        this.hasThumbs = args[0].hasThumbs || {
+            option: false,
+            selector: '',
+        };
+
+        this.activeNavigationClass = 'active';
 
         this.addSlideEvents();
         this.createBulletsPagination();
         this.appendArrowNavigation();
+        this.checkForThumbs();
 
         this.slide.addEventListener('slideChanged', () => {
             this.removeActiveClassFromPaginationBullets();
             this.addActiveClassFromPaginationBullets(this.controlChildrens[this.index.active]);
+            if (this.hasThumbs.options) {
+                this.removeActiveClassFromThumbs();
+                this.addActiveClassFromThumbs(this.hasThumbs.elements[this.index.active]);
+            }
         });
+    }
+
+    checkForThumbs() {
+        const { hasThumbs } = this;
+
+        if (hasThumbs.options) {
+            hasThumbs.elements = document.querySelector(hasThumbs.selector).children;
+            /* eslint-disable */
+            [...hasThumbs.elements].map((element, index) => {
+                /* eslint-enable */
+                element.addEventListener('click', (ev) => {
+                    ev.preventDefault();
+                    this.removeActiveClassFromThumbs();
+                    this.addActiveClassFromThumbs(ev.currentTarget);
+                    this.changeSlide(index);
+                });
+            });
+            this.addActiveClassFromThumbs(this.hasThumbs.elements[this.index.active]);
+        }
+    }
+
+    addActiveClassFromThumbs(target) {
+        target.classList.add(this.activeNavigationClass);
+    }
+
+    removeActiveClassFromThumbs() {
+        [...this.hasThumbs.elements].map(item => item.classList.remove(this.activeNavigationClass));
     }
 
     createArrowNavigation() {
@@ -220,11 +279,11 @@ export class SliderNav extends Slider {
     }
 
     addActiveClassFromPaginationBullets(target) {
-        target.classList.add(this.activeBulletClass);
+        target.classList.add(this.activeNavigationClass);
     }
 
     removeActiveClassFromPaginationBullets() {
-        [...this.control.children].map(item => item.classList.remove(this.activeBulletClass));
+        [...this.control.children].map(item => item.classList.remove(this.activeNavigationClass));
     }
 
     /* eslint-disable */
