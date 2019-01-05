@@ -12,14 +12,17 @@ export class Slider {
         this.infinite = options.infinite || false;
         this.activeClass = 'slide-active';
 
-        this.bindEvents();
-        this.transition(true);
-        this.slidesConfig();
-        this.slidesIndexNav(0);
-        this.changeSlide(this.index.active);
-        this.changeActiveClass();
-        this.addResizeEvent();
-        this.keyboardNavigation();
+        console.log(this.slide, this.wrapper);
+        if (this.slide && this.wrapper) {
+            this.bindEvents();
+            this.transition(true);
+            this.slidesConfig();
+            this.slidesIndexNav(0);
+            this.changeSlide(this.index.active);
+            this.changeActiveClass();
+            this.addResizeEvent();
+            this.keyboardNavigation();
+        }
     }
 
     transition(active) {
@@ -171,17 +174,19 @@ export class Slider {
         this.activePrevSlide = this.activePrevSlide.bind(this);
         this.activeNextSlide = this.activeNextSlide.bind(this);
 
-        this.onResize = debounce(this.onResize.bind(this), 150);
+        this.onResize = CommonHelpers.debounce(this.onResize.bind(this), 150);
         this.keyboardNavigation = this.keyboardNavigation.bind(this);
     }
 
     init() {
-        this.addSlideEvents();
+        if (this.slide && this.wrapper) {
+            this.addSlideEvents();
+        }
         return this;
     }
 }
 
-export class SliderNav extends Slider {
+export default class SliderNav extends Slider {
     constructor(...args) {
         super(...args);
         this.hasThumbs = args[0].hasThumbs || {
@@ -191,19 +196,20 @@ export class SliderNav extends Slider {
 
         this.activeNavigationClass = 'active';
 
-        this.addSlideEvents();
-        this.createBulletsPagination();
-        this.appendArrowNavigation();
-        this.checkForThumbs();
-
-        this.slide.addEventListener('slideChanged', () => {
-            this.removeActiveClassFromPaginationBullets();
-            this.addActiveClassFromPaginationBullets(this.controlChildrens[this.index.active]);
-            if (this.hasThumbs.options) {
-                this.removeActiveClassFromThumbs();
-                this.addActiveClassFromThumbs(this.hasThumbs.elements[this.index.active]);
-            }
-        });
+        if (this.slide && this.wrapper) {
+            this.addSlideEvents();
+            this.createBulletsPagination();
+            this.appendArrowNavigation();
+            this.checkForThumbs();
+            this.slide.addEventListener('slideChanged', () => {
+                this.removeActiveClassFromPaginationBullets();
+                this.addActiveClassFromPaginationBullets(this.controlChildrens[this.index.active]);
+                if (this.hasThumbs.options) {
+                    this.removeActiveClassFromThumbs();
+                    this.addActiveClassFromThumbs(this.hasThumbs.elements[this.index.active]);
+                }
+            });
+        }
     }
 
     checkForThumbs() {

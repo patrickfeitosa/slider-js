@@ -1,4 +1,4 @@
-import { Slider, SliderNav } from './modules/Slider.js';
+import SliderNav from './modules/Slider.js';
 // import SliderNav from './modules/Slider.js';
 
 const Methods = {
